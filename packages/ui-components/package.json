@@ -1,0 +1,6 @@
+{
+  "name": "@brainstormd/ui-components",
+  "version": "1.0.0",
+  "description": "Scaffolding for future UI components library",
+  "private": true
+}

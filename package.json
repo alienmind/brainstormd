@@ -1,0 +1,19 @@
+{
+  "name": "brainstormd",
+  "version": "1.0.0",
+  "description": "A tool for producing a knowledge base of brainstorming ideas from any LLM to Markdown",
+  "private": true,
+  "scripts": {
+    "build": "pnpm -r run build",
+    "lint": "pnpm -r run lint",
+    "test": "pnpm -r run test",
+    "setup": "./scripts/setup.sh"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  }
+}

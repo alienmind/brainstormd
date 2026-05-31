@@ -1,0 +1,19 @@
+{
+  "name": "@brainstormd/github-action-organizer",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@brainstormd/core-logic": "workspace:*",
+    "@brainstormd/shared-types": "workspace:*",
+    "@google/genai": "^2.7.0",
+    "dotenv": "^17.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.5"
+  }
+}

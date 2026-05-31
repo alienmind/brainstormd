@@ -1,0 +1,18 @@
+{
+  "name": "@brainstormd/google-apps-script",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "deploy": "../scripts/deploy-gas.sh"
+  },
+  "dependencies": {
+    "@brainstormd/shared-types": "workspace:*",
+    "@brainstormd/core-logic": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "@google/clasp": "^2.4.2",
+    "@types/google-apps-script": "^1.0.83"
+  }
+}
