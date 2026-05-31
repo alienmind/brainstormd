@@ -76,3 +76,8 @@ export function setupTrigger() {
     
   Logger.log(`Time-driven trigger installed successfully for ${functionName}.`);
 }
+
+// Expose functions to the Google Apps Script global scope
+declare var global: any;
+global.syncIdeas = syncIdeas;
+global.setupTrigger = setupTrigger;
