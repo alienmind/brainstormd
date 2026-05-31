@@ -77,18 +77,16 @@ Use this prompt for starting a new idea from scratch:
 
 > "Act as my personal brainstorming assistant for [YOUR TOPIC]. We will bounce ideas back and forth until the concept is solid. When an idea is validated, I will ask you to generate the 'Final Block'. That block must have a representative title on the first line, followed by the comprehensive description of the idea below in Markdown format. Finally, you must end the response with this exact reminder: **'💡 Action Required: Click the Share & Export button below, select Export to Docs, and move the generated document strictly into your \`brainstormd\` folder to trigger the synchronization!'**"
 
-### Prompt 2: The "Inception" (Testing a Transition to DevTest)
+### Prompt 2: Transitioning an Existing Idea
 
-If you want to document a project that is already being built (like Brainstormd itself), use this prompt to ensure the AI categorizes it directly into the `devtest/` folder:
+Because Brainstormd automatically tracks file movements across stages, you don't need to start a new Google Doc or run a massive prompt just to move an idea to the next phase.
 
-> "Act as my personal brainstorming assistant for a project called 'Brainstormd'. Brainstormd is an automated knowledge base tool. It works by having a Google Apps Script that triggers every 5 minutes to read Google Docs in a specific Drive folder. It converts those Docs to Markdown, sends them via a webhook to a GitHub Action, and then uses Gemini 2.5 Flash to automatically organize the files into lifecycle stages (IDEATION, DEVTEST, PRODUCTION) before committing them to a repo.
-> 
-> We are going to bounce ideas back and forth until the concept is solid. When an idea is validated, I will ask you to generate the 'Final Block'. That block must have a representative title on the first line, followed by the comprehensive description of the idea below in Markdown format. 
-> 
-> *IMPORTANT INSTRUCTION FOR THIS IDEA:* This project is no longer an idea; it is actively being built and tested right now. Therefore, make sure the text explicitly mentions that 'Brainstormd is currently in the DEVTEST phase'.
-> 
-> Finally, you must end your response with this exact reminder: **'💡 Action Required: Click the Share & Export button below, select Export to Docs, and move the generated document strictly into your \`brainstormd\` folder to trigger the synchronization!'**"
+If you are already conversing with Gemini about an existing idea, you can simply tell it:
+> "We've decided to move forward with this! I have promoted this project into the DevTest phase. Please generate a small update snippet that I can append to my existing document to reflect this new state."
 
+Gemini will generate a short summary of the transition. **Just copy that snippet and paste it at the bottom of your existing Google Doc** in the `brainstormd` folder. 
+
+Within 5 minutes, the sync will run again. The system will read the updated document, recognize the new `DevTest` status, automatically **delete** the old file from the `ideation/` folder in your GitHub repository, and recreate it in the `devtest/` folder!
 ### Finalizing the Sync
 
 Once Gemini generates the Final Block for an idea that you like, follow these steps to trigger the sync:
