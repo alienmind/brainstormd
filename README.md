@@ -61,13 +61,18 @@ Your configured brainstorm folder will be created automatically in your Google D
 
 ### Step 4: Interacting with Gemini
 
-To generate ideas directly into your folder, go to [Google Gemini](https://gemini.google.com/) and ensure the **Google Workspace** extension is enabled.
+To generate ideas, go to [Google Gemini](https://gemini.google.com/) and use the following prompt to start your brainstorming session:
 
-Use the following prompt to start your brainstorming session:
+> "Act as my personal brainstorming assistant for [YOUR TOPIC]. We will bounce ideas back and forth until the concept is solid. When an idea is validated, I will ask you to generate the 'Final Block'. That block must have a representative title on the first line, followed by the comprehensive description of the idea below in Markdown format. Finally, you must end the response with this exact reminder: **'💡 Action Required: Click the Share & Export button below, select Export to Docs, and move the generated document strictly into your \`brainstormd\` folder to trigger the synchronization!'**"
 
-> "Act as my personal brainstorming assistant for [YOUR TOPIC]. As we generate and validate good ideas, your final task for each consolidated idea is: Use the Workspace extension to create a new Google Doc and save it strictly inside my Google Drive folder named 'brainstormd' (or your custom name). The document must have a representative title on the first line and a detailed description of the idea below."
+Once Gemini generates the Final Block for an idea that you like, follow these steps to trigger the sync:
 
-Once Gemini creates the document, your Apps Script will detect it within 5 minutes and synchronize it to your GitHub repository.
+1. Click the **Share & export** button at the bottom of Gemini's response.
+2. Select **Export to Docs**. Gemini will create a new Google Doc for you.
+3. Click **Open Docs** on the toast notification.
+4. Click the **Move** (Folder) icon at the top next to the document title, and move the document strictly into your `brainstormd` folder.
+
+Within 5 minutes, your Apps Script will detect the new document, convert it to Markdown, and dispatch it to your GitHub repository where the Action will autonomously categorize and commit it!
 
 ## Development
 

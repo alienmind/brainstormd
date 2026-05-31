@@ -1,0 +1,58 @@
+name: Organize Ideas via Gemini
+
+on:
+  repository_dispatch:
+    types: [brainstormd_idea]
+
+permissions:
+  contents: write
+
+jobs:
+  organize-idea:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout data repository
+        uses: actions/checkout@v4
+
+      - name: Checkout Brainstormd logic
+        uses: actions/checkout@v4
+        with:
+          repository: alienmind/brainstormd
+          path: _brainstormd_logic
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+          run_install: false
+
+      - name: Build Organizer
+        run: |
+          cd _brainstormd_logic
+          pnpm install
+          pnpm --filter @brainstormd/github-action-organizer... build
+
+      - name: Save payload to file
+        run: |
+          cat << 'EOF' > idea_payload.json
+          ${{ toJson(github.event.client_payload) }}
+          EOF
+
+      - name: Run Organizer Script
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: node _brainstormd_logic/apps/github-action-organizer/dist/index.js idea_payload.json
+
+      - name: Commit and Push changes
+        run: |
+          rm -rf _brainstormd_logic idea_payload.json
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/
+          git commit -m "Organize idea: ${{ github.event.client_payload.title }}" || echo "No changes to commit"
+          git push

@@ -39,10 +39,31 @@ if [ -n "$GEMINI_API_KEY" ]; then
     echo "DRIVE_FOLDER_NAME=$DRIVE_FOLDER_NAME" >> .env
     
     echo "Generating Google Apps Script config..."
-    echo "export const CONFIG = { DRIVE_FOLDER_NAME: \"$DRIVE_FOLDER_NAME\" };" > apps/google-apps-script/src/config.ts
+    GITHUB_TOKEN=$(gh auth token)
+    echo "export const CONFIG = { DRIVE_FOLDER_NAME: \"$DRIVE_FOLDER_NAME\", GITHUB_REPO: \"$DEST_REPO\", GITHUB_TOKEN: \"$GITHUB_TOKEN\" };" > apps/google-apps-script/src/config.ts
     
     echo "Setting GEMINI_API_KEY secret in $DEST_REPO..."
     echo "$GEMINI_API_KEY" | gh secret set GEMINI_API_KEY --repo "$DEST_REPO"
+
+    echo "Deploying GitHub Actions workflow to $DEST_REPO..."
+    # Create the workflow file content
+    WORKFLOW_CONTENT=$(cat .github/workflows/organize-ideas.yml | base64 -w 0)
+    
+    # Check if the file already exists to get its SHA (required for updating via API)
+    FILE_SHA=$(gh api repos/$DEST_REPO/contents/.github/workflows/organize-ideas.yml --jq '.sha' 2>/dev/null || echo "")
+    
+    if [ -z "$FILE_SHA" ]; then
+        gh api --method PUT -H "Accept: application/vnd.github+json" \
+            repos/$DEST_REPO/contents/.github/workflows/organize-ideas.yml \
+            -f message="Setup Brainstormd organizer workflow" \
+            -f content="$WORKFLOW_CONTENT" > /dev/null
+    else
+        gh api --method PUT -H "Accept: application/vnd.github+json" \
+            repos/$DEST_REPO/contents/.github/workflows/organize-ideas.yml \
+            -f message="Update Brainstormd organizer workflow" \
+            -f content="$WORKFLOW_CONTENT" \
+            -f sha="$FILE_SHA" > /dev/null
+    fi
 fi
 
 # Build local packages

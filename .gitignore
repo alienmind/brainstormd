@@ -2,3 +2,4 @@ node_modules
 dist
 .env
 .clasp.json
+apps/google-apps-script/src/config.ts

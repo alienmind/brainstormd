@@ -46,9 +46,31 @@ export function syncIdeas() {
     // Using core logic to format as markdown
     const markdown = generateMarkdown(payload);
     
-    // TODO: Send HTTP POST request to GitHub API via repository dispatch or contents API
-    // const url = `https://api.github.com/repos/OWNER/REPO/dispatches`;
-    // UrlFetchApp.fetch(url, { method: 'post', payload: ... });
+    // Send HTTP POST request to GitHub API via repository dispatch
+    const url = `https://api.github.com/repos/${CONFIG.GITHUB_REPO}/dispatches`;
+    const payloadData = {
+      event_type: 'brainstormd_idea',
+      client_payload: {
+        title: title,
+        markdown: markdown,
+        source: 'google-drive',
+        timestamp: lastUpdated
+      }
+    };
+    
+    const options: GoogleAppsScript.URL_Fetch.URLFetchRequestOptions = {
+      method: 'post',
+      contentType: 'application/json',
+      headers: {
+        'Authorization': `Bearer ${CONFIG.GITHUB_TOKEN}`,
+        'Accept': 'application/vnd.github.v3+json'
+      },
+      payload: JSON.stringify(payloadData),
+      muteHttpExceptions: true
+    };
+    
+    const response = UrlFetchApp.fetch(url, options);
+    Logger.log(`[SYNCED] ${title} - GitHub API Response: ${response.getResponseCode()} ${response.getContentText()}`);
     
     Logger.log(`[SYNCED] ${title}`);
   }

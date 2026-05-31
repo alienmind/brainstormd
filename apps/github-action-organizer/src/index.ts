@@ -1,9 +1,19 @@
 import 'dotenv/config';
-import { generateMarkdown } from '@brainstormd/core-logic';
+import fs from 'fs';
+import path from 'path';
 import { GoogleGenAI } from '@google/genai';
 
 async function run() {
-  console.log("Running Brainstormd Organizer...");
+  const payloadFile = process.argv[2];
+  if (!payloadFile || !fs.existsSync(payloadFile)) {
+    console.error("Payload file not found:", payloadFile);
+    process.exit(1);
+  }
+
+  const payload = JSON.parse(fs.readFileSync(payloadFile, 'utf8'));
+  const { title, markdown } = payload;
+
+  console.log(`Organizing idea: ${title}`);
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -13,31 +23,40 @@ async function run() {
 
   const ai = new GoogleGenAI({ apiKey });
 
-  // Example payload parsing, usually passed via process.env or file
-  const ideaTitle = process.env.IDEA_TITLE || "Untitled Idea";
-  const ideaContent = process.env.IDEA_CONTENT || "Content goes here";
+  const prompt = `You are an expert knowledge base organizer. 
+I have an idea titled "${title}".
+The content is:
+${markdown}
 
-  console.log(`Organizing idea: ${ideaTitle}`);
+Based on this content, suggest a short, relevant directory path where this should be saved (e.g., docs/tech, docs/marketing, docs/product/features).
+Only respond with the directory path, nothing else. No formatting, no quotes. It must start with 'docs/'.`;
 
-  // In a real scenario we'd use Gemini to determine the correct folder path
-  const prompt = `Classify this idea into a directory structure: ${ideaContent}`;
   const response = await ai.models.generateContent({
     model: 'gemini-2.5-flash',
     contents: prompt
   });
 
-  console.log("Gemini suggests directory:", response.text);
+  let dirPath = response.text?.trim() || 'docs/uncategorized';
+  
+  // Clean up any potential markdown formatting in the response
+  dirPath = dirPath.replace(/`/g, '');
+  
+  if (!dirPath.startsWith('docs/')) {
+    dirPath = path.join('docs', dirPath.replace(/^\//, ''));
+  }
 
-  // Generate markdown and save to disk (simulated)
-  const markdown = generateMarkdown({
-    title: ideaTitle,
-    content: ideaContent,
-    source: 'web-app',
-    timestamp: new Date().toISOString()
-  });
+  console.log("Gemini suggests directory:", dirPath);
 
-  console.log("Generated Markdown:");
-  console.log(markdown);
+  // Sanitize title for filename
+  const safeFilename = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '.md';
+  const fullPath = path.join(process.cwd(), dirPath, safeFilename);
+
+  // Ensure directory exists
+  fs.mkdirSync(path.join(process.cwd(), dirPath), { recursive: true });
+
+  // Write file
+  fs.writeFileSync(fullPath, markdown, 'utf8');
+  console.log(`Successfully saved idea to ${fullPath}`);
 }
 
 run().catch(console.error);
