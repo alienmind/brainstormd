@@ -32,4 +32,4 @@ echo "Pushing code to Google Apps Script..."
 npx clasp push
 
 echo "Deployment to Google Apps Script complete!"
-echo "Make sure to open your script on script.google.com and set up the 'On Edit' or 'On Change' triggers."
+echo "Check the README.md (Step 3) for instructions on how to activate the trigger in the browser."
