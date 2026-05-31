@@ -59,11 +59,37 @@ After `pnpm setup` completes successfully, it will print a link to your newly de
 
 Your configured brainstorm folder will be created automatically in your Google Drive, and the script will now run every 5 minutes to scan for new ideas.
 
-### Step 4: Interacting with Gemini
+## Interacting with Gemini
 
-To generate ideas, go to [Google Gemini](https://gemini.google.com/) and use the following prompt to start your brainstorming session:
+To generate ideas, go to [Google Gemini](https://gemini.google.com/). You can use Brainstormd for different use cases and lifecycle stages. 
+
+### Lifecycle Stages
+Brainstormd is designed to act as an automated Kanban board. When an idea is processed, Gemini will read the context and automatically categorize the file into one of three top-level stages:
+- **`ideation/`**: Brainstorming, early concepts, rough drafts.
+- **`devtest/`**: Actively being built, tested, or experimented on.
+- **`production/`**: Completed, deployed, or fully validated.
+
+If you edit an existing idea and change its state (e.g., from an idea to something in production), the GitHub Action will automatically detect the transition and **move the file** to the correct folder!
+
+### Prompt 1: The Standard Brainstorming Session
+
+Use this prompt for starting a new idea from scratch:
 
 > "Act as my personal brainstorming assistant for [YOUR TOPIC]. We will bounce ideas back and forth until the concept is solid. When an idea is validated, I will ask you to generate the 'Final Block'. That block must have a representative title on the first line, followed by the comprehensive description of the idea below in Markdown format. Finally, you must end the response with this exact reminder: **'💡 Action Required: Click the Share & Export button below, select Export to Docs, and move the generated document strictly into your \`brainstormd\` folder to trigger the synchronization!'**"
+
+### Prompt 2: The "Inception" (Testing a Transition to DevTest)
+
+If you want to document a project that is already being built (like Brainstormd itself), use this prompt to ensure the AI categorizes it directly into the `devtest/` folder:
+
+> "Act as my personal brainstorming assistant for a project called 'Brainstormd'. Brainstormd is an automated knowledge base tool. It works by having a Google Apps Script that triggers every 5 minutes to read Google Docs in a specific Drive folder. It converts those Docs to Markdown, sends them via a webhook to a GitHub Action, and then uses Gemini 2.5 Flash to automatically organize the files into lifecycle stages (IDEATION, DEVTEST, PRODUCTION) before committing them to a repo.
+> 
+> We are going to bounce ideas back and forth until the concept is solid. When an idea is validated, I will ask you to generate the 'Final Block'. That block must have a representative title on the first line, followed by the comprehensive description of the idea below in Markdown format. 
+> 
+> *IMPORTANT INSTRUCTION FOR THIS IDEA:* This project is no longer an idea; it is actively being built and tested right now. Therefore, make sure the text explicitly mentions that 'Brainstormd is currently in the DEVTEST phase'.
+> 
+> Finally, you must end your response with this exact reminder: **'💡 Action Required: Click the Share & Export button below, select Export to Docs, and move the generated document strictly into your \`brainstormd\` folder to trigger the synchronization!'**"
+
+### Finalizing the Sync
 
 Once Gemini generates the Final Block for an idea that you like, follow these steps to trigger the sync:
 
